@@ -29,3 +29,8 @@ right_diagonal:
     dec ax
     test ax, ax
     jnz right_diagonal
+
+finish:
+    jmp finish
+
+
