@@ -120,5 +120,6 @@ put_pixels:
     pop cx
     pop bx
     pop ax
+    pop bp
     ret
 
