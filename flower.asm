@@ -34,8 +34,12 @@ finish:
     jmp finish
 
 
+
+
+
+
 put_pixels:
-    ; ax=xc, bx=yc, cx=x, dx=y
+    ; ax=xc, bx=yc, si=x, dx=y
     push bp
     mov bp, sp
 
@@ -47,70 +51,62 @@ put_pixels:
     push di
 
 
-    mov cl, 8
+    mov cx, 8
     
-    mov si, ax
-    add si, cx
     mov di, bx
     add di, dx
-    shl di, cl
+    shl di, cl 
+    add di, ax
     add di, si
     mov byte [di], 1
     
-    mov si, ax
-    sub si, cx
     mov di, bx
     add di, dx
-    shl di, cl
-    add di, si
+    shl di, cl 
+    add di, ax
+    sub di, si
     mov byte [di], 1
     
-    mov si, ax
-    add si, cx
     mov di, bx
     sub di, dx
-    shl di, cl
+    shl di, cl 
+    add di, ax
     add di, si
     mov byte [di], 1
     
-    mov si, ax
-    sub si, cx
     mov di, bx
     sub di, dx
-    shl di, cl
-    add di, si
+    shl di, cl 
+    add di, ax
+    sub di, si
     mov byte [di], 1
     
-    mov si, ax
-    add si, dx
     mov di, bx
-    add di, cx
-    shl di, cl
     add di, si
+    shl di, cl 
+    add di, ax
+    add di, dx
     mov byte [di], 1
     
-    mov si, ax
-    sub si, dx
     mov di, bx
-    add di, cx
-    shl di, cl
     add di, si
+    shl di, cl 
+    add di, ax
+    sub di, dx
     mov byte [di], 1
     
-    mov si, ax
-    add si, dx
     mov di, bx
-    sub di, cx
-    shl di, cl
-    add di, si
+    sub di, si
+    shl di, cl 
+    add di, ax
+    add di, dx
     mov byte [di], 1
     
-    mov si, ax
-    sub si, dx
     mov di, bx
-    sub di, cx
-    shl di, cl
-    add di, si
+    sub di, si
+    shl di, cl 
+    add di, ax
+    sub di, dx
     mov byte [di], 1
 
     
