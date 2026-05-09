@@ -36,6 +36,8 @@ lea dx, [0xc0-0x80]
 circles:
     call draw_circle
     dec dx
+    dec dx
+    inc bx
     test dx, dx
     jnz circles
 
