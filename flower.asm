@@ -30,6 +30,11 @@ right_diagonal:
     test ax, ax
     jnz right_diagonal
 
+    mov ax, 0x80
+    mov bx, 0x40
+    lea dx, [0xa0-0x80]
+    call draw_circle
+
 finish:
     jmp finish
 
@@ -110,6 +115,64 @@ put_pixels:
     mov byte [di], 1
 
     
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    pop bp
+    ret
+
+draw_circle:
+    ; ax=xc, bx=yc, dx=r
+    push bp
+    mov bp, sp
+
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+
+    ; si=x, di=y, cx=d
+    xor si, si
+    mov di, dx
+    mov cx, 1
+    shl di, cl
+    mov cx, 3
+    sub cx, di
+    call put_pixels
+    while_yGEx:
+        cmp di, si
+        jl done_while_yGEx
+        cmp cx, 0
+        jle dLE0
+        dG0:
+            dec di
+            add cx, 10
+            ; cx += 4(x-y)
+            sub si, di
+            shl si, 2
+            add cx, si
+            shr si, 2
+            add si, di
+            jmp after_dG0
+        dLE0:
+            add cx, 6
+            ; cx += 4x
+            shl si, 2
+            add cx, si
+            shr si, 2
+        after_dG0:
+        inc si
+        call put_pixels
+        jmp while_yGEx
+        
+        
+            
+    done_while_yGEx:
     pop di
     pop si
     pop dx
