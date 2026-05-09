@@ -30,10 +30,14 @@ right_diagonal:
     test ax, ax
     jnz right_diagonal
 
-    mov ax, 0x80
-    mov bx, 0x40
-    lea dx, [0xa0-0x80]
+mov ax, 0x80
+lea bx, [0x40+0x8]
+lea dx, [0xc0-0x80]
+circles:
     call draw_circle
+    dec dx
+    test dx, dx
+    jnz circles
 
 finish:
     jmp finish
@@ -129,58 +133,56 @@ draw_circle:
     push bp
     mov bp, sp
 
-    push ax
-    push bx
     push cx
     push dx
     push si
     push di
     sub sp, 6
 
-    ; x=-14, y=-16, d=-18
-    mov word [bp-14], 0
-    mov word [bp-16], dx
+    ; x=-10, y=-12, d=-14
+    mov word [bp-10], 0
+    mov word [bp-12], dx
     mov cx, 1
     mov di, dx
     shl di, cl
     mov cx, 3
     sub cx, di
-    mov word [bp-18], cx
+    mov word [bp-14], cx
 
-    mov word si, [bp-14]
-    mov word dx, [bp-16]
+    mov word si, [bp-10]
+    mov word dx, [bp-12]
     call put_pixels
     while_yGEx:
-        mov di, [bp-16]
-        mov si, [bp-14]
+        mov di, [bp-12]
+        mov si, [bp-10]
         cmp di, si
         jl done_while_yGEx
 
-        cmp word [bp-18], 0
+        cmp word [bp-14], 0
         jle dLE0
         dG0:
-            dec word [bp-16]
+            dec word [bp-12]
             ; d += 4(x-y) + 10
-            add word [bp-18], 10
-            mov si, [bp-14]
-            sub si, [bp-16]
+            add word [bp-14], 10
+            mov si, [bp-10]
+            sub si, [bp-12]
             mov cl, 2
             shl si, cl
-            add [bp-18], si
+            add [bp-14], si
             jmp after_dG0
         dLE0:
             ; d += 4x + 6
-            add word [bp-18], 6
-            mov si, [bp-14]
+            add word [bp-14], 6
+            mov si, [bp-10]
             mov cl, 2
             shl si, cl
-            add [bp-18], si
+            add [bp-14], si
 
         after_dG0:
 
-        inc word [bp-14]
-        mov si, [bp-14]
-        mov dx, [bp-16]
+        inc word [bp-10]
+        mov si, [bp-10]
+        mov dx, [bp-12]
         call put_pixels
         jmp while_yGEx
     done_while_yGEx:
@@ -190,8 +192,6 @@ draw_circle:
     pop si
     pop dx
     pop cx
-    pop bx
-    pop ax
     pop bp
     ret
 
