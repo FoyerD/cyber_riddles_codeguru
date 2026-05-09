@@ -135,44 +135,57 @@ draw_circle:
     push dx
     push si
     push di
+    sub sp, 6
 
-    ; si=x, di=y, cx=d
-    xor si, si
-    mov di, dx
+    ; x=-14, y=-16, d=-18
+    mov word [bp-14], 0
+    mov word [bp-16], dx
     mov cx, 1
+    mov di, dx
     shl di, cl
     mov cx, 3
     sub cx, di
+    mov word [bp-18], cx
+
+    mov word si, [bp-14]
+    mov word dx, [bp-16]
     call put_pixels
     while_yGEx:
+        mov di, [bp-16]
+        mov si, [bp-14]
         cmp di, si
         jl done_while_yGEx
-        cmp cx, 0
+
+        cmp word [bp-18], 0
         jle dLE0
         dG0:
-            dec di
-            add cx, 10
-            ; cx += 4(x-y)
-            sub si, di
-            shl si, 2
-            add cx, si
-            shr si, 2
-            add si, di
+            dec word [bp-16]
+            ; d += 4(x-y) + 10
+            add word [bp-18], 10
+            mov si, [bp-14]
+            sub si, [bp-16]
+            mov cl, 2
+            shl si, cl
+            add [bp-18], si
             jmp after_dG0
         dLE0:
-            add cx, 6
-            ; cx += 4x
-            shl si, 2
-            add cx, si
-            shr si, 2
+            ; d += 4x + 6
+            add word [bp-18], 6
+            mov si, [bp-14]
+            mov cl, 2
+            shl si, cl
+            add [bp-18], si
+
         after_dG0:
-        inc si
+
+        inc word [bp-14]
+        mov si, [bp-14]
+        mov dx, [bp-16]
         call put_pixels
         jmp while_yGEx
-        
-        
-            
     done_while_yGEx:
+        
+    add sp, 6
     pop di
     pop si
     pop dx
