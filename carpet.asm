@@ -8,7 +8,20 @@
 %define start_y [bp-0x12]
 
 
-;sx, xy, size, depth
+mov ax, 4
+push ax
+
+mov ax,0x51
+push ax
+
+mov ax, 0x30
+push ax
+push ax
+
+call sierpinski_carpet
+jmp end
+
+; sierpinski_carpet(x, y, size, depth)
 sierpinski_carpet:
     push bp
     mov bp, sp
@@ -19,35 +32,60 @@ sierpinski_carpet:
     push dx
     push si
     push di
-    sub sp, 6
+    sub sp, 6       ; Allocate 6 bytes for locals
 
     ; test depth for 0
     mov ax, depth
     test ax, ax
-    jz sierpinski_carpet_end
+    jnz .continue_1
+    jmp sierpinski_carpet_end
+    .continue_1:
 
     ; subsize = size/3
     mov ax, size
+    xor dx, dx
     mov bx, 3
-    div word bx
+    div bx
     mov subsize, ax
 
     ; start_x = square_x + subsize
-    mov word ax, square_x
+    mov ax, square_x
+    add ax, subsize
     mov start_x, ax
-    mov ax, subsize
-    add start_x, ax
     
     ; start_y = square_y + subsize
-    mov word ax, square_y
+    mov ax, square_y
+    add ax, subsize
     mov start_y, ax
-    mov ax, subsize
-    add start_y, ax
     
+    mov cx, start_y
+    mov bx, start_y
+    add bx, subsize     ; bx = end_y
+
     y_loop:
+        cmp cx, bx
+        jge y_loop_end
+
+        mov dx, start_x
+        mov si, start_x
+        add si, subsize     ; si = end_x
+
         x_loop:
-            
+            cmp dx, si
+            jge x_loop_end
+
+            mov ah, cl
+            mov al, dl
+            mov di, ax
+            mov byte [di], 1
+
+            inc dx
+            jmp x_loop
+
         x_loop_end:
+        inc cx
+        jmp y_loop
+
     y_loop_end:
 
     mov ax, depth
@@ -55,9 +93,50 @@ sierpinski_carpet:
     jz sierpinski_carpet_end
 
 
+    mov cx, square_y
+    mov bx, 0
+    recurse_y:
+        cmp bx, 3
+        jge recurse_end
 
+        mov dx, square_x
+        mov si, 0
+        recurse_x:
+            cmp si, 3
+            jge recurse_x_end
+
+            cmp bx, 1
+            jne do_call
+            cmp si, 1
+            je skip_call
+
+        do_call:
+            mov ax, depth
+            dec ax
+            push ax
+            push word subsize
+            push cx
+            push dx
+            call sierpinski_carpet
+            add sp, 8
+
+        skip_call:
+            mov ax, subsize
+            add dx, ax
+            inc si
+            jmp recurse_x
+
+        recurse_x_end:
+            mov ax, subsize
+            add cx, ax
+            inc bx
+            jmp recurse_y
+
+    recurse_end:
 
 sierpinski_carpet_end:
+    add sp, 6
+
     pop di
     pop si
     pop dx
@@ -67,3 +146,7 @@ sierpinski_carpet_end:
 
     pop bp
     ret
+
+
+end:
+    jmp 0x0
