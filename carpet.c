@@ -27,7 +27,7 @@ void sierpinski_carpet(int square_x, int square_y, int size, int depth) {
     
     int subsize = size / 3;
     int start_x = square_x + subsize;
-    int start_y = square_y+ subsize;
+    int start_y = square_y + subsize;
 
     for (int y = start_y; y < start_y + subsize; y++) {
         for (int x = start_x; x < start_x + subsize; x++) {
