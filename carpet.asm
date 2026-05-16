@@ -14,7 +14,7 @@ push ax
 mov ax,0x51
 push ax
 
-mov ax, 0x30
+mov ax, 0x58
 push ax
 push ax
 
